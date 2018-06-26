@@ -1,0 +1,1773 @@
+\documentclass[10pt]{beamer} % use option [handout] to generate a printable version that disregards \pause
+\usepackage{beamerthemesplit}
+%\usetheme{Antibes}
+%\usecolortheme{beetle}
+\usetheme{Warsaw}
+\usecolortheme{seagull}
+%\usecolortheme{beaver}
+%\usecolortheme{beetle}
+%\usecolortheme{dove}
+%\usetheme{Szeged}
+%\usecolortheme{dove}
+\usefonttheme[]{serif}
+
+%\usepackage[pdftex]{graphicx}
+\PassOptionsToPackage{pdftex}{graphicx}
+\usepackage{subfigure}
+\usepackage{enumerate}
+
+                             % when including figure files
+\usepackage{multicol}        % used for the two-column index
+\usepackage[bottom]{footmisc}% places footnotes at page bottom
+
+\usepackage{tabularx,booktabs} 
+
+\usepackage{url}
+
+\usepackage{amsmath}%
+\usepackage{amsfonts}%
+\usepackage{amssymb}%
+\usepackage{mathabx}% contains big math symbols such as for representing the Carthesian product
+\usepackage{algorithmic}
+\usepackage{algorithm}
+\usepackage{listings}
+
+\usepackage{changepage}
+%------------------------------------------------------------
+% Theorem like environments
+%
+
+\newtheorem{axiom}{Axiom}
+\newtheorem{conclusion}{Conclusion}
+\newtheorem{condition}{Condition}
+\newtheorem{criterion}{Criterion}
+\newtheorem{notation}{Notation}
+\newtheorem{summary}{Summary}
+\numberwithin{equation}{section}
+
+%\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+
+% ----------------------------------------------
+
+
+\usepackage{tikz}
+\usetikzlibrary{mindmap, shadows,decorations.markings,trees, arrows,arrows.meta,shapes,shapes.arrows,shapes.misc,automata,backgrounds,petri,patterns,positioning,scopes,chains,matrix,decorations.pathmorphing,shadows,calc,fit}
+
+
+
+\usepackage{calc}
+\newlength{\outerradius}
+\newlength{\innerradius}
+\setlength{\outerradius}{2cm}
+\setlength{\innerradius}{1.5cm}
+
+\newcommand{\progresscircle}[5]{ % percentage, scale, colour, label, label width
+  \begin{tikzpicture}[scale=#2, every node/.style={transform shape},baseline={([yshift={-\ht\strutbox}]current bounding box.north)},outer sep=0pt,inner sep=0pt]
+    \fill[#3!25] (0,0) circle (\outerradius);
+    \fill[#3!70!black] (0,0) -- (0, \outerradius)
+      arc (90:90-3.6*#1:\outerradius) -- (0,0);
+    \fill[white] (0,0) circle (\innerradius);
+    \node (0,0) {\Huge\sffamily #1\%};
+    \draw[#3!40!black] (0,-3) node[below,font=\huge, text width=#5, align=center]{#4};
+  \end{tikzpicture}
+}
+
+\usepackage{float}
+\makeatletter
+
+
+\tikzset{
+    %Define standard arrow tip
+    >=stealth',
+    %Define style for boxes
+    punkt/.style={
+           rectangle,
+           rounded corners,
+           draw=black, very thick,
+           text width=6.5em,
+           minimum height=2em,
+           text centered},
+    % Define arrow style
+    pil/.style={
+           ->,
+           thick,
+           shorten <=2pt,
+           shorten >=2pt,}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%% program code formatting environment %%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% this creates a custom and simpler ruled box style
+\newcommand\floatc@simplerule[2]{{\@fs@cfont #1 #2}\par}
+\newcommand\fs@simplerule{\def\@fs@cfont{\bfseries}\let\@fs@capt\floatc@simplerule
+  \def\@fs@pre{}%\hrule height.4pt depth0pt \kern4pt
+  \def\@fs@post{}% \kern4pt\hrule height.4pt depth0pt \kern4pt \relax
+  \def\@fs@mid{}% \kern4pt
+  \let\@fs@iftopcapt\iftrue}
+
+% this code block defines the new and custom floatbox float environment
+\floatstyle{simplerule}
+\newfloat{program}{H}{lop}
+\floatname{program}{Code snippet}
+\usepackage{caption}
+\setcounter{program}{-2}
+\def\codefont{ \fontspec{Courier New} \fontsize{9pt}{11pt}\selectfont}
+\definecolor{codebgcolor}{HTML}{ECEFF1}
+\definecolor{codefgcolor}{HTML}{039BE5}
+\definecolor{basiccolor}{HTML}{1435AD}
+\definecolor{stringcolor}{HTML}{2C3E82}
+\definecolor{darkgreen}{RGB}{36,143,43}
+\definecolor{darkred}{RGB}{153,63,58}
+
+\newenvironment{code}
+{\begin{program}
+  \begin{center}
+    \begin{tikzpicture}
+      \node [fill=codebgcolor,rounded corners=5pt]
+      \bgroup
+      \bgroup
+      \begin{tabular}{l}}
+      {\end{tabular}
+      \egroup
+      \egroup;
+    \end{tikzpicture}
+  \end{center}
+\end{program}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\mathchardef\ordinarycolon\mathcode`\:
+\mathcode`\:=\string"8000
+\begingroup \catcode`\:=\active
+  \gdef:{\mathrel{\mathop\ordinarycolon}}
+\endgroup
+\setlength{\parindent}{1cm} \setlength{\parskip}{1ex plus 0.5ex
+minus 0.2ex}
+
+
+\def\imagetop#1{\vtop{\null\hbox{#1}}}
+
+%----------------------------------------------------------------
+\title{Binary Search Trees}
+\subtitle{(the sum, the product and the functor)}
+
+\author{Oles Hodych}
+\institute{Melbourne Scala User Group}
+
+
+\date{28 May 2018}
+
+\begin{document}
+% For every picture that defines or uses external nodes, you'll have to
+% apply the 'remember picture' style. To avoid some typing, we'll apply
+% the style to all pictures.
+\tikzstyle{every picture}+=[remember picture]
+%%%%%%%%%%%%%%%%%%%%%%%%title%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\frame{\titlepage}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% set Scala code colouring style
+\lstset{escapechar=\%,basicstyle=\normalsize\color{black},
+	  morekeywords={def, val, if, then, else, type, class, trait, sealed, private, public, new, this, override, case, match, object, extends, implicit},
+	  numbers=left, numberstyle=\tiny, stepnumber=1, numbersep=1pt, keywordstyle=\bfseries\color{codefgcolor}, stringstyle=\color{stringcolor}}
+
+\begin{frame}
+	\frametitle{Contents}
+  	\begin{itemize}
+		\setlength\itemsep{1em}
+    	\item Sets and recursive definitions.
+    	\item Choosing the right abstraction.
+		\item Product and sum types.
+		\item Processing set elements, functoriality.
+		\item A set for anything.
+  	\end{itemize}
+\end{frame}
+
+
+%-------------------------------------------
+%-------------------------------------------
+%-------------------------------------------
+%-------------------------------------------
+\section{Sets and recursive definitions}
+
+\begin{frame}
+	\frametitle{A declarative definition of a set}
+    \begin{itemize}
+  		\setlength\itemsep{1em}
+		\item[] A \emph{set} is an unordered collection of objects, called \emph{elements} or \emph{members} of a set.\pause
+		\item[] A set is said to \emph{contain} its elements.\pause
+		\item[] The $a \in A$ notation denotes that $a$ is an element of set $A$.\pause
+		\item[] The $a \not\in A$ notation denotes that $a$ is not an element of set $A$.	 
+    \end{itemize}	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Set properties}
+	\large
+    \begin{itemize}
+  		\setlength\itemsep{1em}
+		\item Sets are \emph{unordered} collections.\pause
+		\item Sets contain no duplicate elements.
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+	\frametitle{Problem statement}
+	\large
+  	\begin{itemize}
+		\setlength\itemsep{1em}
+    	\item Create a data abstraction for representing a finite set of elements.
+		\item Implement set operations:\\[1.1em]
+		\begin{itemize}
+			\large
+			\setlength\itemsep{1em}
+			\item $adjoin(x, S)$ -- produces a new set that has all elements of set $S$ and element $x$;
+			\item $contains?(x, S)$ -- a predicate that checks if $x \in S$;
+	   	\end{itemize}
+  	\end{itemize}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Examples of sets}
+	\large
+  	\begin{itemize}
+		\setlength\itemsep{1em}
+    	\item $S = \{2,\, 1,\, 3,\, 4\}$
+		\item $[a,b] = \{x\,|\,a \leq x \leq b\}$
+		\item $\mathbb{N}_0 = \{0,\, 1,\, 2,\,\ldots\}$		
+  	\end{itemize}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Recursive definition of sets and other structures}
+	\large
+    \noindent
+    \textbf{Basis step:}\\
+    \begin{adjustwidth}{2cm}{}
+		Specify the initial collection of elements.\\[1em]
+	\end{adjustwidth}
+
+    \noindent
+	\textbf{Recursive step:}\\
+	\begin{adjustwidth}{2cm}{}
+		Specify the rules for forming new elements from already present ones.
+	\end{adjustwidth}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Recursive definition of sets, example}
+	\large
+    \noindent
+    \textbf{Basis step:}\\
+    \begin{adjustwidth}{2cm}{}
+		$3\in S$.\\[1em]
+	\end{adjustwidth}
+
+    \noindent
+	\textbf{Recursive step:}\\
+	\begin{adjustwidth}{2cm}{}
+		if $x\in S$ and $y\in S$ then $(x+y)\in S$
+	\end{adjustwidth}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Recursive definition of sets, example}
+	\small
+    \begin{center}
+    \begin{tabular}{llp{3cm}}
+    \scriptsize Basis step:       & $S_0=\{3\}$           &  \\[1em]\pause
+    \scriptsize Recursive step 1: & $S_1=\{3, 6\}$        & \scriptsize $3+3$ \\[1em]\pause
+    \scriptsize Recursive step 2: & $S_2=\{3, 6, 9, 12\}$ & \scriptsize $3+6$ and $6+6$ \\[1em]\pause
+    \scriptsize Recursive step 3: & $S_4=\{3, 6, 9, 12, 15, 18, 21, 24\}$ & \scriptsize $3+12$, $6+9$, $6+12$, $9+12$ and $12+12$ \\[1em]\pause    
+    \ldots           & \ldots &  \\
+    \end{tabular}
+    \end{center}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Structural induction}
+	\large
+    \noindent
+    \textbf{Basis step:}\\
+    \begin{adjustwidth}{2cm}{}
+		Show that statement $P$ holds for instances that represents our structure at its basis step.\\[1em]
+	\end{adjustwidth}
+
+    \noindent
+	\textbf{Inductive step:}\\
+	\begin{adjustwidth}{2cm}{}
+		\emph{Inductive hypothesis}: $P$ holds for all instances of out structure after applying $k$ recursive steps.
+		
+		\noindent Show that $P(x)$ holds for all new instances formed by applying the $k+1$ recursive step.
+	\end{adjustwidth}	
+\end{frame}
+
+
+%-------------------------------------------
+%-------------------------------------------
+%-------------------------------------------
+%-------------------------------------------
+\section{Choosing the right abstraction}
+
+\begin{frame}
+	\frametitle{Problem statement, simplified}
+	\large
+  	\begin{itemize}
+		\large
+		\setlength\itemsep{1em}
+    	\item Create a data abstraction for representing a finite set of \emph{integers}.
+		\item Implement set operations:\\[1.1em]
+		\begin{itemize}
+			\large
+			\setlength\itemsep{1em}
+			\item $adjoin(x, S)$ -- produces a new set that has all elements of set $S$ and element $x$;
+			\item $contains?(x, S)$ -- a predicate that checks if $x \in S$;
+	   	\end{itemize}
+
+  	\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Sets as unordered lists}
+	\lstset{numbers=none,basicstyle=\normalsize\color{black}}
+    \begin{code}
+        \begin{lstlisting}
+type IntSet = List[Int]
+
+def contains_?(x: Int, set: IntSet): Boolean = ???
+
+def adjoin(x: Int, set: IntSet): IntSet = ???
+        \end{lstlisting}
+    \end{code}
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Sets as unordered lists}
+	\lstset{basicstyle=\normalsize\color{black}}
+    \begin{code}
+        \begin{lstlisting}
+def contains_?(x: Int, set: IntSet): Boolean =
+  if (set.isEmpty)
+    false
+  else
+    x.equals(set.head) || contains_?(x, set.tail)
+        \end{lstlisting}
+    \end{code}
+
+    \begin{code}
+        \begin{lstlisting}
+def adjoin(x: Int, set: IntSet): IntSet =
+  if (contains_?(x, set))
+    set
+  else
+    x::set
+        \end{lstlisting}
+    \end{code}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Sets as unordered lists}
+	% sets have no structure, thus we need to make structure
+	\noindent\large But what is the complexity of these operations?\\[1em]\pause
+  	\begin{itemize}
+		\setlength\itemsep{1em}
+		\item Linear time inclusion (\texttt{adjoin}) of a new number into a set, $O(n)$.\pause
+    	\item Linear time search to check (\texttt{contains?}) if a number is present in a set, $O(n)$.\pause
+		\item Linear space growth characteristics, $O(n)$.
+  	\end{itemize}	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Sets as binary search trees, 2-trees}
+	% sets have no structure, thus we need to make structure
+	\noindent\large The advantages of using a binary search tree as the data structure for implementing a set:\\[1em]\pause
+  	\begin{itemize}
+		\setlength\itemsep{1em}
+		\item Logarithmic time inclusion (\texttt{adjoin}) of a new number into a set, $O(\lceil log_2\,n\rceil)$.\pause
+    	\item Logarithmic time search to check (\texttt{contains?}) if a number is present in a set, $O(\lceil log_2\,n\rceil)$.\pause
+		\item Linear space growth characteristics, $O(n)$.
+  	\end{itemize}	
+\end{frame}
+
+\begin{frame}
+	\frametitle{$O(n)$ vs. $O(\lceil log_2\,n\rceil)$}
+	% sets have no structure, thus we need to make structure
+	
+	\noindent\Large $|S| = 15$\\[1em]\pause
+	\noindent\Large $15$ vs. $4$\\[2em]\pause
+	
+    \noindent\Large $|S| = 1,000,000,000$\\[1em]\pause
+	\noindent\Large $1,000,000,000$ vs. $30$\\
+
+\end{frame}
+
+
+\begin{frame}
+	\frametitle{Recursive definition of tree structures, full binary tree}
+	\large
+    \noindent
+    \textbf{Basis step:}\\
+    \begin{adjustwidth}{2cm}{}
+		A single node forms a full binary tree.\\[1em]
+	\end{adjustwidth}
+
+    \noindent
+	\textbf{Recursive step:}\\
+	\begin{adjustwidth}{2cm}{}
+		If $T_1$ and $T_2$ are disjoint full binary trees then there is a full binary tree $T_1\cdot T_2$, which consists of a root node $r$ together with edges connecting this root to the roots of the left subtree $T_1$ and the right subtree $T_2$.
+	\end{adjustwidth}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Recursive definition of tree structures, full binary tree}
+	
+	\small
+    \begin{center}
+    \begin{tabular}{llp{4cm}}
+    Basis step:       & 
+            \begin{tikzpicture}[scale=0.4, every node/.style = {align=center}, level 1/.style={sibling distance=30mm}, level 2/.style={sibling distance=10mm},
+         my circle/.style={draw, fill, circle, minimum size=2pt, inner sep=0pt}]
+          \node[my circle] {};
+        \end{tikzpicture}
+
+    &  \\[2em]\pause
+
+    Recursive step 1: & 
+        \begin{tikzpicture}[scale=0.4, every node/.style = {align=center}, level 1/.style={sibling distance=20mm}, level 2/.style={sibling distance=20mm},
+         my circle/.style={draw, fill, circle, minimum size=2pt, inner sep=0pt}]
+          \node[my circle] {}
+            child { node [my circle] {} }
+            child { node [my circle] {} };
+        \end{tikzpicture}
+
+    & \\[1em]\pause
+    
+    Recursive step 2: & 
+        \begin{tikzpicture}[scale=0.4, every node/.style = {align=center}, level 1/.style={sibling distance=20mm}, level 2/.style={sibling distance=15mm},
+         my circle/.style={draw, fill, circle, minimum size=2pt, inner sep=0pt}]
+          \node[my circle] {}
+            child { node [my circle] {}
+    	        child { node [my circle] {} }
+                child { node [my circle] {} }
+            }
+            child { node [my circle] {} };
+        \end{tikzpicture}\pause
+        \hspace*{2em}
+
+        \begin{tikzpicture}[scale=0.4, every node/.style = {align=center}, level 1/.style={sibling distance=20mm}, level 2/.style={sibling distance=15mm},
+         my circle/.style={draw, fill, circle, minimum size=2pt, inner sep=0pt}]
+          \node[my circle] {}
+            child { node [my circle] {} }
+            child { node [my circle] {} 
+       	        child { node [my circle] {} }
+                child { node [my circle] {} }
+            };
+        \end{tikzpicture}\pause
+        \hspace*{2em}
+
+        \begin{tikzpicture}[scale=0.4, every node/.style = {align=center}, level 1/.style={sibling distance=20mm}, level 2/.style={sibling distance=15mm},
+         my circle/.style={draw, fill, circle, minimum size=2pt, inner sep=0pt}]
+          \node[my circle] {}
+            child { node [my circle] {}
+       	        child { node [my circle] {} }
+                child { node [my circle] {} }
+            }
+            child { node [my circle] {}
+       	        child { node [my circle] {} }
+                child { node [my circle] {} }
+            };
+        \end{tikzpicture}
+
+    &  \\[1em]\pause
+    \ldots           & \ldots &  \\
+    \end{tabular}
+    \end{center}
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Full binary search tree}
+	\Large $S = \{5, 7, 9, 12, 15\}$
+	
+	\vspace*{-2.1cm}
+    \hspace*{7cm}
+    \begin{tikzpicture}[remember picture, overlay, scale=0.6, every node/.style = {align=center}, level 1/.style={sibling distance=30mm}, level 2/.style={sibling distance=20mm}, level 3/.style={sibling distance=10mm}]
+        \node (root) {7}
+            child { node {5}
+       	        child { node {$\varnothing$} }
+                child { node (empty) {$\varnothing$} }
+            }
+            child { node (twelve) {12}
+       	        child { node {9}
+           	        child { node {$\varnothing$} }
+                    child { node {$\varnothing$} }
+	            }
+                child { node {15}
+           	        child { node {$\varnothing$} }
+                    child { node {$\varnothing$} }
+                }
+            };
+    \end{tikzpicture}
+\end{frame}
+
+\begin{frame}
+   \frametitle{Recursively defined functions for recursively defined structures}
+   \large\noindent Let's introduce some functions on full binary trees.\\[1em]\pause
+   \begin{itemize}
+      \setlength\itemsep{1em}
+        \item $h: T_{FB}\rightarrow\mathbb{N}_0$ to compute the height of a full binary tree.
+      \item $n: T_{FB}\rightarrow\mathbb{N}$ to compute the number of nodes in a full binary tree.
+   \end{itemize}
+\end{frame}
+
+\begin{frame}
+   \frametitle{Recursive definition of $h(T)$}
+   \large
+    \noindent
+    \textbf{Basis step:}\\
+    \begin{adjustwidth}{2cm}{}
+      If $T$ is a full binary tree consisting only of a root node then its height is 0.\\
+      \noindent That is $h(T) = 0$.
+   \end{adjustwidth}\pause
+
+    \noindent
+   \textbf{Recursive step:}
+   \begin{adjustwidth}{2cm}{}
+      If $T_1$ and $T_2$ are full binary trees then a full binary tree $T = T_1\cdot T_2$ has the height of $h(T) = 1 + max(\;h(T_1),\;h(T_2)\;)$.
+   \end{adjustwidth}
+
+\end{frame}
+
+\begin{frame}
+   \frametitle{Recursive definition of $n(T)$}
+   \large
+    \noindent
+    \textbf{Basis step:}\\
+    \begin{adjustwidth}{2cm}{}
+      If $T$ is a full binary tree consisting only of a root node then $n(T) = 1$.
+   \end{adjustwidth}\pause
+
+    \noindent
+   \textbf{Recursive step:}\\
+   \begin{adjustwidth}{2cm}{}
+      If $T_1$ and $T_2$ are full binary trees then a full binary tree $T = T_1\cdot T_2$ has $n(T) = 1 + n(T_1) + n(T_2)$ nodes.
+   \end{adjustwidth}
+   
+\end{frame}
+
+\begin{frame}
+   \frametitle{Recursively defined functions for recursively defined structures}
+   \large\centering\textbf{Observation:} functions on hierarchical recursively defined structures can only be defined recursively.
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Hierarchical data by means of type hierarchies}
+	\pause
+	\hspace*{1.5cm}
+    \begin{tikzpicture}[scale=0.8, every node/.style = {align=center}]
+
+       	  \node[color=black] (intSet) at (0,0) {IntSet};
+	      \node[color=black] (empty) at (-2,-3) {Empty};
+	      \node[color=black] (nonEmpty) at (2,-3) {NonEmpty};
+          \draw[draw,-{Latex[length=5mm, width=3mm]},color=black!20!gray]  (empty) to node [auto] {} (intSet);
+          \draw[draw,-{Latex[length=5mm, width=3mm]},color=black!20!gray]  (nonEmpty) to node [auto] {} (intSet);
+            
+    \end{tikzpicture}
+\end{frame}
+
+
+\begin{frame}[fragile]
+	\frametitle{IntSet}
+	\lstset{numbers=none,basicstyle=\normalsize\color{black}}
+    \begin{code}
+        \begin{lstlisting}
+ type Set = IntSet
+        
+ sealed trait IntSet {
+     def contains_?(x: Int): Boolean
+
+     def adjoin(x: Int): IntSet
+ }        
+        \end{lstlisting}
+    \end{code}
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Empty set}
+	\lstset{basicstyle=\normalsize\color{black}}
+    \begin{code}
+        \begin{lstlisting}
+ case object Empty extends IntSet {
+     def contains_?(x: Int): Boolean = 
+         false
+
+     def adjoin(x: Int): IntSet = 
+         NonEmpty(x, Empty, Empty)
+ }
+        \end{lstlisting}
+    \end{code}
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Non empty set, operation \texttt{contains?}}
+	\lstset{basicstyle=\footnotesize\color{black}}
+    \begin{code}
+        \begin{lstlisting}
+ case class NonEmpty(el: Int, 
+                     left: IntSet, 
+                     right: IntSet) extends IntSet {
+
+     def contains_?(x: Int): Boolean = 
+         if (x < el) left contains_? x
+         else if (x > el) right contains_? x
+         else true
+    
+     def adjoin(x: Int): IntSet = ...
+ }
+        \end{lstlisting}
+    \end{code}
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Non empty set, operation \texttt{adjoin}}
+	\lstset{basicstyle=\footnotesize\color{black}}
+    \begin{code}
+        \begin{lstlisting}
+ case class NonEmpty(el: Int,
+                     left: IntSet,
+                     right: IntSet) extends IntSet {
+
+    def contains_(x: Int): Boolean = ...
+
+    def adjoin(x: Int): IntSet =
+        if (x < el) NonEmpty(el, left adjoin x, right)
+        else if (x > el) NonEmpty(el, left, right adjoin x)
+        else this
+ }
+        \end{lstlisting}
+    \end{code}
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{IntSet in action}
+	\lstset{numbers=none,basicstyle=\footnotesize\color{black}}
+    \begin{code}
+        \begin{lstlisting}
+ scala> val set = NonEmpty(7, Empty, Empty)
+ set: NonEmpty = NonEmpty(7,Empty,Empty)
+        \end{lstlisting}
+    \end{code}\pause
+
+    \begin{code}
+    	\hspace*{-2.5cm}
+        \begin{lstlisting}
+            scala> val set2 = set adjoin 5 adjoin 12
+            set2: NonEmpty = NonEmpty(7,NonEmpty(5,Empty,Empty),NonEmpty(12,Empty,Empty))
+        \end{lstlisting}
+    \end{code}
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Empty and non empty set, improving \texttt{toString}}
+	\lstset{numbers=none,basicstyle=\footnotesize\color{black}}
+    \begin{code}
+        \begin{lstlisting}
+ case object Empty extends IntSet {
+     ...
+     override def toString = "."
+ }
+        \end{lstlisting}
+    \end{code}\pause
+
+    \begin{code}
+        \begin{lstlisting}
+ case class NonEmpty(el: Int,
+                     left: IntSet,
+                     right: IntSet) extends IntSet {
+     ...
+     override def toString = 
+         "{" + left + el + right + "}"     
+ }
+        \end{lstlisting}
+    \end{code}
+
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{IntSet back in action}
+	\lstset{numbers=none,basicstyle=\footnotesize\color{black}}
+    \begin{code}
+        \begin{lstlisting}
+ scala> val set = NonEmpty(7, Empty, Empty)
+ set: NonEmpty = {.7.}
+        \end{lstlisting}
+    \end{code}\pause
+
+    \begin{code}
+        \begin{lstlisting}
+ scala> val set2 = set adjoin 5 adjoin 12
+ set2: IntSet = {{.5.}7{.12.}}
+        \end{lstlisting}
+    \end{code}
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Persistent data structures, analysing operation \texttt{adjoin}}
+	\lstset{basicstyle=\scriptsize\color{black}}
+	\vspace*{-2.5cm}
+    \begin{code}
+        \begin{lstlisting}
+ def adjoin(x: Int): IntSet = NonEmpty(x, Empty, Empty)
+
+ def adjoin(x: Int): IntSet =
+    if (x < el) NonEmpty(el, left adjoin x, right)
+    else if (x > el) NonEmpty(el, left, right adjoin x)
+    else this
+ }
+ 
+ set adjoin 3
+        \end{lstlisting}
+    \end{code}
+
+	\vspace*{-0.1cm}
+    \hspace*{6cm}
+    \begin{tikzpicture}[remember picture, overlay, scale=0.6, every node/.style = {align=center}, level 1/.style={sibling distance=30mm}, level 2/.style={sibling distance=20mm}, level 3/.style={sibling distance=10mm}]
+        \node (root) {7}
+            child { node {5}
+       	        child { node {$\varnothing$} }
+                child { node (empty) {$\varnothing$} }
+            }
+            child { node (twelve) {12}
+       	        child { node {9}
+           	        child { node {$\varnothing$} }
+                    child { node {$\varnothing$} }
+	            }
+                child { node {15}
+           	        child { node {$\varnothing$} }
+                    child { node {$\varnothing$} }
+                }
+            };
+            
+    	\onslide<2->{
+       	  \node[color=black!20!red] (seven) at (-3,1.5) {7};
+          \draw[bend left=50,color=black!20!red]  (seven) to node [auto] {} (twelve);
+    	}
+    	\onslide<3->{
+       	  \node[color=black!20!red] (five) at (-4,0) {5};
+          \draw[bend left=0,color=black!20!red]  (seven) to node [auto] {} (five);
+          \draw[bend left=50,color=black!20!red]  (five) to node [auto] {} (empty);
+    	}
+    	\onslide<4->{
+       	  \node[color=black!20!red] (three) at (-5,-1.5) {3};
+	      \node[color=black!20!red] (emptyLeft) at (-6,-3) {$\varnothing$};
+	      \node[color=black!20!red] (emptyRight) at (-4,-3) {$\varnothing$};
+          \draw[bend left=0,color=black!20!red]  (five) to node [auto] {} (three);
+          \draw[bend left=0,color=black!20!red]  (three) to node [auto] {} (emptyLeft);
+          \draw[bend left=0,color=black!20!red]  (three) to node [auto] {} (emptyRight);
+    	}
+    \end{tikzpicture}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Implementing $h(T)$ and $n(T)$}
+	\small
+    \noindent
+    \textbf{Basis step:}\\
+    \begin{adjustwidth}{2cm}{}
+		\noindent $h(T) = 0$
+	\end{adjustwidth}
+
+    \noindent
+	\textbf{Recursive step:}
+	\begin{adjustwidth}{2cm}{}
+        $h(T) = 1 + max(\;h(T_1),\;h(T_2)\;)$
+	\end{adjustwidth}\pause
+	~\\[1em]
+
+    \noindent
+    \textbf{Basis step:}\\
+    \begin{adjustwidth}{2cm}{}
+        $n(T) = 1$
+	\end{adjustwidth}
+
+    \noindent
+	\textbf{Recursive step:}\\
+	\begin{adjustwidth}{2cm}{}
+		$n(T) = 1 + n(T_1) + n(T_2)$
+	\end{adjustwidth}
+\end{frame}
+
+
+%-------------------------------------------
+%-------------------------------------------
+%-------------------------------------------
+%-------------------------------------------
+\section{Product and sum types}
+
+\begin{frame}[fragile]
+	\frametitle{Which subtype represents an empty set?}
+	\lstset{numbers=none}
+    \begin{code}
+        \begin{lstlisting}
+ sealed trait IntSet {
+     ...
+     def isEmpty: Boolean
+ }
+
+ case object Empty extends IntSet {
+     ...
+     def isEmpty: Boolean = true
+ }
+
+ case class NonEmpty(...) extends IntSet {
+     ...
+     def isEmpty: Boolean = false
+ }
+        \end{lstlisting}
+    \end{code}
+\end{frame}
+
+
+\begin{frame}
+	\frametitle{Cartesian product and Product type}
+	\small
+    \noindent
+    \textbf{Cartesian product (Set Theory):}\\
+    \begin{adjustwidth}{2cm}{}
+		\noindent $A = \{1,3\}$, $B = \{1,2\}$\\[0.5em]\pause
+		\noindent $A \times B = \{(1,1),\;(1,2)\;(3,1),\;(3,2)\}$\\[2em]\pause
+	\end{adjustwidth}
+
+    \noindent\textbf{Product type (Type Theory):}\\
+    \begin{adjustwidth}{2cm}{}
+		\noindent $A\times B$\\[0.5em]\pause
+		\noindent \texttt{Rational} = \texttt{Int}$\;\times\;$\texttt{Int}\\[0.5em]\pause
+		\noindent \texttt{NonEmpty} = \texttt{Int}$\;\times\;$\texttt{IntSet}$\;\times\;$\texttt{IntSet}
+	\end{adjustwidth}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Disjoint union and Sum type}
+	\small
+    \noindent\textbf{Union (Set Theory):}\\
+    \begin{adjustwidth}{1cm}{}
+		\noindent $A = \{1,3\}$, $B = \{1,2\}$\\[0.5em]\pause
+		\noindent $A \bigcup B = \{1,\;3,\;2\}$\\[1em]\pause
+	\end{adjustwidth}
+	
+    \noindent\textbf{Disjoint union or tagged union (Set Theory):}\\
+    \begin{adjustwidth}{1cm}{}
+		\noindent $A = \{1,3\}$, $B = \{1,2\}$\\[0.5em]\pause
+		\noindent $A^* = \{(1,a),\;(3,a)\}$, $B^* = \{(1,b),\;(2,b)\}$\\[0.5em]\pause
+		\noindent $A \coprod B = A^* \bigcup B^* = \{(1,a),\;(3,a)\;(1,b),\;(2,b)\}$\\[1em]\pause
+	\end{adjustwidth}
+
+    \noindent\textbf{Sum type (Type Theory):}\\
+    \begin{adjustwidth}{1cm}{}
+		\noindent $A+B$\\[0.5em]\pause
+		\noindent \texttt{IntSet} = \texttt{Empty}$\;+\;$\texttt{NonEmpty}\\[0.5em]\pause
+		\noindent \texttt{IntSet} = \texttt{Empty}$\;\mid\;$\texttt{NonEmpty(0, Empty, Empty)}$\;\mid\;$\ldots\\[0.5em]\pause
+		\noindent \texttt{Boolean} = \texttt{true}$\;\mid\;$\texttt{false}\\[0.5em]\pause
+		\noindent \texttt{Int} = $1\;\mid\;2\;\mid\;3\;\mid\;\ldots$
+	\end{adjustwidth}
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Sealed type hierarchies for Sum and Prod types}
+	\lstset{numbers=none}
+    \begin{code}
+        \begin{lstlisting}
+ sealed trait IntSet {
+     ...
+ }
+
+ case object Empty extends IntSet {
+     ...
+ }
+
+ case class NonEmpty(el: Int
+                     left: IntSet,
+                     right: IntSet) extends IntSet {
+     ...
+ }
+        \end{lstlisting}
+    \end{code}
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Decomposition of compound data, pattern matching}
+
+	\lstset{numbers=none}
+    \begin{code}
+        \begin{lstlisting}
+ e match { 
+     case p1 => e1
+     case p2 => e2
+     ...
+     case pn => en 
+ }
+        \end{lstlisting}
+    \end{code}
+    
+    \vfill
+    \tiny
+    \href{http://www.scala-lang.org/files/archive/spec/2.12/08-pattern-matching.html}{http://www.scala-lang.org/files/archive/spec/2.12/08-pattern-matching.html}
+\end{frame}
+
+
+\begin{frame}[fragile]
+	\frametitle{Implementing $h(T)$ with pattern matching}
+
+	\lstset{basicstyle=\footnotesize\color{black}}
+    \begin{code}
+        \begin{lstlisting}
+ def height(set: IntSet): Int = set match {
+    case Empty => 
+        0
+    case NonEmpty(_, left, right) => 
+        1 + Math.max(height(left), height(right))
+ }
+        \end{lstlisting}
+    \end{code}
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Implementing $n(T)$ with pattern matching}
+
+	\lstset{basicstyle=\footnotesize\color{black}}
+    \begin{code}
+        \begin{lstlisting}
+ def size(set: IntSet): Int = set match {
+    case Empty => 
+        0
+    case NonEmpty(_, left, right) => 
+        1 + size(left) + size(right)
+ }
+        \end{lstlisting}
+    \end{code}
+\end{frame}
+
+
+%-------------------------------------------
+%-------------------------------------------
+%-------------------------------------------
+%-------------------------------------------
+\section{Processing set elements, functoriality}
+
+\begin{frame}
+	\frametitle{Processing elements in sets}
+	\Large\centering
+	How do we go about doing something with elements in our \texttt{IntSet}?
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Double each element}
+	\lstset{basicstyle=\small\color{black}}
+    \begin{code}
+        \begin{lstlisting}
+ def double(set: IntSet): IntSet = set match {
+     case Empty =>
+    	set
+     case NonEmpty(el, left, right) =>
+    	NonEmpty(2 * el, double(left), double(right)) 
+ }        
+        \end{lstlisting}
+    \end{code}
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Double each element in action}
+	\lstset{numbers=none,basicstyle=\small\color{black}}
+    \begin{code}
+        \begin{lstlisting}
+ scala> val set = Empty include 7 include 5 include (
+                  12) include 9 include 15
+ set: IntSet = {{.5.}7{{.9.}12{.15.}}}
+
+ scala> double(set)
+ res3: IntSet = {{.10.}14{{.18.}24{.30.}}}
+        \end{lstlisting}
+    \end{code}
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Square each element}
+	\lstset{basicstyle=\small\color{black}}
+    \begin{code}
+        \begin{lstlisting}
+ def square(set: IntSet): IntSet = set match {
+    case Empty =>
+        set
+    case NonEmpty(el, left, right) =>
+        NonEmpty(el * el, square(left), square(right)) 
+ }        
+        \end{lstlisting}
+    \end{code}
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Square each element in action}
+	\lstset{numbers=none,basicstyle=\small\color{black}}
+    \begin{code}
+        \begin{lstlisting}
+ scala> val set = Empty include 7 include 5 include (
+                 12) include 9 include 15
+ set: IntSet = {{.5.}7{{.9.}12{.15.}}}
+
+ scala> square(set)
+ res6: IntSet = {{.25.}49{{.81.}144{.225.}}}
+        \end{lstlisting}
+    \end{code}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Processing elements in sets}
+	\Large\centering
+	Can processing of elements in \texttt{IntSet} be generalised?
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Mapping elements}
+	\lstset{basicstyle=\small\color{black}}
+    \begin{code}
+        \begin{lstlisting}
+ sealed trait IntSet {
+    def contains_?(x: Int): Boolean
+    def adjoin(x: Int): IntSet
+
+    def map(f: Int => Int): IntSet = this match {
+      case Empty =>
+        this
+      case NonEmpty(el, left, right) =>
+        NonEmpty(f(el), left map f, right map f)
+    }
+  }
+        \end{lstlisting}
+    \end{code}
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Mapping elements in action}
+	\lstset{numbers=none,basicstyle=\small\color{black}}
+    \begin{code}
+        \begin{lstlisting}
+ scala> val set = Empty include 7 include 5 include (
+                 12) include 9 include 15
+ set: IntSet = {{.5.}7{{.9.}12{.15.}}}
+
+ scala> set map (x=>2*x)
+ res10: IntSet = {{.10.}14{{.18.}24{.30.}}}
+
+ scala> set map (x=>x*x)
+ res11: IntSet = {{.25.}49{{.81.}144{.225.}}}
+        \end{lstlisting}
+    \end{code}
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Mapping elements in action, alternative syntax}
+	\lstset{numbers=none,basicstyle=\small\color{black}}
+    \begin{code}
+        \begin{lstlisting}
+scala> set map { x=>2*x }
+res12: IntSet = {{.10.}14{{.18.}24{.30.}}}
+
+scala> set map { 2*_ }
+res13: IntSet = {{.10.}14{{.18.}24{.30.}}}
+        \end{lstlisting}
+    \end{code}
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Mapping is not easy\ldots}
+	\noindent The presented implementation of \texttt{map} is invalid!\pause
+
+	\lstset{numbers=none,basicstyle=\footnotesize\color{black}}
+    \begin{code}
+        \begin{lstlisting}
+scala> val set = Empty include 7 include 5 ... include 15
+set: IntSet = {{.5.}7{{.9.}12{.15.}}}
+
+scala> set map { x => if (x > 7) -x else x }
+res14: IntSet = {{.5.}7{{.-15{.-12.}}-9.}}
+        \end{lstlisting}
+    \end{code}\pause
+
+    \begin{code}
+        \begin{lstlisting}
+scala> set map { x => 1 }
+res14: IntSet = {{.1.}1{{.1.}1{.1.}}}
+        \end{lstlisting}
+    \end{code}
+
+\end{frame}
+
+%---------------------------------------
+% introduction to category theory
+
+\begin{frame}
+	\frametitle{Category theory, simplistic view}
+	\large
+	\noindent Major tools in the categorical toolbox:\\[1em]
+  	\begin{itemize}
+		\setlength\itemsep{1em}
+    	\item \textbf{Abstraction}% -- remove the unnecessary details, higher level reasoning.\pause
+		\item \textbf{Composition}% -- combining things.\pause
+		\item \textbf{Identity}% -- carries the notion of equality.
+  	\end{itemize}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Category theory, intuitive definition}
+	\Large
+	\centering A category is a bunch of objects with morphisms between them.
+
+	\vspace*{-1cm}
+    \begin{tikzpicture}[scale=0.7, every node/.style={scale=0.7}, node distance=2.5cm,>=stealth',on grid,auto,every state/.style={minimum size=1pt}]
+        %\draw[help lines] (-3,-3) grid (6,3);
+        \tikzset{vertex/.style = {shape=circle,draw,minimum size=1.5em}}
+        \tikzset{edge/.style = {->,> = latex'}}
+        % vertices
+        \node[vertex] (a)  at (0,0) {a};
+        \node[vertex] (b) at (3,0) {b};
+        %edges        
+        \draw[edge] (a)  to[bend left=50,color=black!20!red] (b);
+        \draw[edge] (a)  to[bend left] (b);
+        \draw[edge] (b)  to[bend left] (a);
+        
+        \draw[edge] (a) to[out=-40, in=220, looseness=1, edge node={node [sloped,below] {$$}}] (b);
+        
+        \draw[edge] (b) .. controls ($ (b) +(-1,1.7)$) and ($ (a) +(1,1.5)$) .. (a) node[pos=0.5, inner sep=-1pt, label=above:{$$}] {};
+        \draw[edge] (b) .. controls ($ (b) +(-1,-1.5)$) and ($ (a) +(1,-1.5)$) .. (a) node[pos=0.5, inner sep=-1pt, label=above:{$$}] {};
+        
+        \draw[edge] (a) .. controls ($ (a) +(-1.5,1.1)$) and ($ (a) +(-1.5,-1.1)$) .. (a) node[pos=0.5, inner sep=-1pt, label=above:{$$}] {};
+        \draw[edge] (a) .. controls ($ (a) +(-1.7,1.3)$) and ($ (a) +(-1.7,-1.3)$) .. (a) node[pos=0.5, inner sep=-1pt, label=above:{$$}] {};
+        
+        \draw[edge] (a) to[out=110, in=240, looseness=16, edge node={node [sloped,below] {$$}}] (a);
+        \draw[edge] (a) to[out=120, in=230, looseness=16, edge node={node [sloped,below] {$$}}] (a);
+
+        \draw[edge] (b) to[out=60, in=300, looseness=16, edge node={node [sloped,below] {$$}}] (b);
+        \draw[edge] (b) to[out=45, in=325, looseness=7, edge node={node [sloped,below] {$$}}] (b);
+        
+    \end{tikzpicture}	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Category theory, intuitive definition}
+	\large
+  	\begin{itemize}
+		\setlength\itemsep{1em}
+		\item \textbf{Objects} -- are primitives, have no structure or properties.
+		\item \textbf{Arrows} -- morphisms, are primitives, join objects, have the beginning and the end.
+  	\end{itemize}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Category theory, intuitive definition}
+	\large
+  	\begin{itemize}
+		\setlength\itemsep{1em}
+		\item Composition -- arrows always compose.
+  	\end{itemize}
+	
+    \begin{tikzpicture}[scale=1, every node/.style={scale=1}, node distance=2.5cm,>=stealth',on grid,auto,every state/.style={minimum size=1pt}]
+        %\draw[help lines] (-3,-3) grid (6,3);
+        \tikzset{vertex/.style = {shape=circle,draw,minimum size=1.5em}}
+        \tikzset{edge/.style = {->,> = latex'}}
+        % vertices
+        \node[vertex] (a)  at (0,0) {a};
+        \node[vertex] (b) at (3,0) {b};
+        \node[vertex] (c) at (6,0) {c};
+        %edges        
+        \draw[edge,color=black!20!red] (a) to[edge node={node [below] {$f$}}] (b);
+        \draw[edge,color=black!20!red] (b) to[edge node={node [below] {$g$}}] (c);
+
+        \onslide<2->{\draw[edge,color=black!20!red] (a)  to[bend left=40, edge node={node [above] {$g\circ f$}}] (c);}
+        \onslide<3->{\draw[edge] (a)  to[bend right=40, edge node={node [above] {$$}}] (c);}
+        \onslide<4->{\draw[edge] (a)  to[bend right=55, edge node={node [above] {$$}}] (c);}
+        \onslide<5->{\draw[edge] (a)  to[bend right=70, edge node={node [above] {$$}}] (c);}
+    \end{tikzpicture}	
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Category theory, intuitive definition}
+	\large
+  	\begin{itemize}
+		\setlength\itemsep{1em}
+		\item Identity -- for every object there is an identity arrow.
+  	\end{itemize}
+		
+    \begin{tikzpicture}[scale=1, every node/.style={scale=1}, node distance=2.5cm,>=stealth',on grid,auto,every state/.style={minimum size=1pt}]
+        %\draw[help lines] (-3,-3) grid (6,3);
+        \tikzset{vertex/.style = {shape=circle,draw,minimum size=1.5em}}
+        \tikzset{edge/.style = {->,> = latex'}}
+        % vertices
+        \node[vertex] (a)  at (0,0) {a};
+        \node[vertex] (b) at (3,0) {b};
+        %edges        
+        \draw[edge] (a) to[edge node={node [below] {$f$}}] (b);
+        \draw[edge] (a) to[out=144, in=215, looseness=10, edge node={node [left] {$id_a$}}] (a);
+        \draw[edge] (b) to[out=330, in=30, looseness=10, edge node={node [right] {$id_b$}}] (b);
+    \end{tikzpicture}	
+\end{frame}
+
+
+\begin{frame}
+	\frametitle{Category theory, axioms}
+	\large
+  	\begin{itemize}
+		\item Left identity $id_{a}\circ f = f$
+  	\end{itemize}
+
+    \begin{tikzpicture}[scale=1, every node/.style={scale=1}, node distance=2.5cm,>=stealth',on grid,auto,every state/.style={minimum size=1pt}]
+        %\draw[help lines] (-3,-3) grid (6,3);
+        \tikzset{vertex/.style = {shape=circle,draw,minimum size=1.5em}}
+        \tikzset{edge/.style = {->,> = latex'}}
+        % vertices
+        \node[vertex] (a)  at (0,0) {a};
+        \node[vertex] (b) at (3,0) {b};
+        %edges        
+        \draw[edge] (a) to[edge node={node [below] {$f$}}] (b);
+        \draw[edge] (b) to[out=330, in=30, looseness=10, edge node={node [right] {$id_b$}}] (b);
+    \end{tikzpicture}	
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Category theory, axioms}
+	\large
+  	\begin{itemize}
+		\item Right identity $f \circ id_{a} = f$
+  	\end{itemize}
+	
+    \begin{tikzpicture}[scale=1, every node/.style={scale=1}, node distance=2.5cm,>=stealth',on grid,auto,every state/.style={minimum size=1pt}]
+        %\draw[help lines] (-3,-3) grid (6,3);
+        \tikzset{vertex/.style = {shape=circle,draw,minimum size=1.5em}}
+        \tikzset{edge/.style = {->,> = latex'}}
+        % vertices
+        \node[vertex] (a)  at (0,0) {a};
+        \node[vertex] (b) at (3,0) {b};
+        %edges        
+        \draw[edge] (a) to[edge node={node [below] {$f$}}] (b);
+        \draw[edge] (a) to[out=144, in=215, looseness=10, edge node={node [left] {$id_a$}}] (a);
+    \end{tikzpicture}	
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{Category theory, axioms}
+	\large
+  	\begin{itemize}
+		\item Associativity $h \circ (g \circ f) = (h \circ g) \circ f$
+  	\end{itemize}
+	
+    \begin{tikzpicture}[scale=0.7, every node/.style={scale=0.7}, node distance=2.5cm,>=stealth',on grid,auto,every state/.style={minimum size=1pt}]
+        %\draw[help lines] (-3,-3) grid (6,3);
+        \tikzset{vertex/.style = {shape=circle,draw,minimum size=1.5em}}
+        \tikzset{edge/.style = {->,> = latex'}}
+        % vertices
+        \node[vertex] (a)  at (0,0) {a};
+        \node[vertex] (b) at (3,0) {b};
+        \node[vertex] (c) at (6,0) {c};
+        \node[vertex] (d) at (9,0) {d};
+        %edges        
+        \draw[edge] (a) to[edge node={node [below] {$f$}}] (b);
+        \draw[edge] (b) to[edge node={node [below] {$g$}}] (c);
+        \draw[edge] (c) to[edge node={node [below] {$h$}}] (d);
+
+        \onslide<2->{\draw[edge] (a)  to[bend left=40, edge node={node [above] {$g\circ f$}}] (c);}
+        \onslide<3->{\draw[edge,color=black!20!red] (a)  to[bend left=60, edge node={node [above] {$h\circ (g\circ f)$}}] (d);}
+        \onslide<4->{\draw[edge] (b)  to[bend right=40, edge node={node [below] {$h\circ g$}}] (d);}
+        \onslide<5->{\draw[edge,color=black!20!red] (a)  to[bend right=60, edge node={node [below] {$(h\circ g) \circ f$}}] (d);}
+    \end{tikzpicture}	
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{Category theory and programming}
+	\Large
+  	\begin{itemize}
+		\setlength\itemsep{1em}
+		\item Objects are types.
+		\item Arrows are functions.
+  	\end{itemize}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Morphisms, intuition}
+	\Large\centering
+	 A \textbf{morphism} is a structure-preserving map from one mathematical object to another.
+\end{frame}
+
+\begin{frame}
+	\frametitle{Homomorphisms, intuition}
+	\Large\centering
+	 A \textbf{homomorphism} is a structure-preserving map between two algebraic structures of the same type.
+\end{frame}
+
+\begin{frame}
+	\frametitle{Functors, intuition}
+	\Large\centering
+	 A \textbf{functor} is a \emph{homomorphism} between categories in the category theory.
+\end{frame}
+
+\begin{frame}
+	\frametitle{Functors, intuition}
+	\Large
+	 \noindent What defines the structure in a category?\\[1em]\pause
+	 \noindent Arrows and their composition!
+\end{frame}
+
+\begin{frame}
+	\frametitle{Functors, intuition}
+	\Large
+	 \noindent Functors must map objects to objects and arrows to arrows while preserving composition!
+\end{frame}
+
+\begin{frame}
+	\frametitle{Functors, preserving structure}
+	\hspace*{-1.0cm}
+    \begin{tikzpicture}[scale=0.7, every node/.style={scale=0.7}, node distance=2.5cm,>=stealth',on grid,auto,every state/.style={minimum size=1pt},
+    every fit/.style={ellipse,draw,inner sep=33pt}]
+        %\draw[help lines] (-3,-3) grid (6,3);
+        \tikzset{vertex/.style = {shape=circle,draw,minimum size=1em}}
+        \tikzset{edge/.style = {->,> = latex'}}
+        % vertices
+        \node[vertex, color=black!20!blue, label={left:$a$}] (a) at (0,0) {};
+        \node[vertex, color=black!20!blue, label={left:$b$}] (b) at (-1,-2) {};
+        \node[vertex, color=black!20!blue, label={left:$c$}] (c) at (1,-4) {};
+        
+        \node[vertex, color=black!20!red, label={right:$F a$}] (Fa)  at (9,0) {};
+        \node[vertex, color=black!20!red, label={right:$F b$}] (Fb) at (8,-2) {};
+        \node[vertex, color=black!20!red, label={right:$F c$}] (Fc) at (10,-4) {};
+
+        \node[draw, dashed, line width=0.1mm, color=white!40!blue, fit = (a) (b) (c),minimum width=2cm] {} ;
+        \node[draw, dashed, line width=0.1mm, color=white!40!red, fit = (Fa) (Fb) (Fc),minimum width=2cm] {} ;
+
+        %edges        
+        \onslide<2->{\draw[edge] (a) to[edge node={node [below] {$$}}] (Fa);}
+        \onslide<3->{\draw[edge] (b) to[edge node={node [below] {$$}}] (Fb);}
+        \onslide<4->{\draw[edge] (c) to[edge node={node [below] {$$}}] (Fc);}
+        
+        \onslide<5->{\draw[edge, color=black!20!blue] (a)  to[edge node={node [left] {$f$}}] (b);}
+        \onslide<6->{\draw[edge, color=black!20!red] (Fa)  to[edge node={node [left] {$F f$}}] (Fb);}
+        
+        \onslide<7->{\draw[edge, color=black!20!blue] (b)  to[edge node={node [left=0.2cm] {$g$}}] (c);}
+        \onslide<8->{\draw[edge, color=black!20!red] (Fb)  to[edge node={node [left=0.2cm] {$F g$}}] (Fc);}
+
+        \onslide<9->{\draw[edge, color=black!20!blue] (a)  to[edge node={node [above right = 0.4cm and 0.3cm of a] {$g\circ f$}}] (c);}
+        \onslide<10->{\draw[edge, color=black!20!red] (Fa)  to[edge node={node [right] {$F(g\circ f)=F g \circ F f$}}] (Fc);}
+        
+        \onslide<11->{\draw[edge, color=black!20!blue] (a) to[out=120, in=60, looseness=16, edge node={node [above] {$id_a$}}] (a);}
+        \onslide<12->{\draw[edge, color=black!20!red] (Fa) to[out=120, in=60, looseness=16, edge node={node [above] {$F id_a = id_{F a}$}}] (Fa);}
+    \end{tikzpicture}	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Functors, further intuition}
+	\Large
+	\noindent A Functor is a collection of many morphisms for mapping all objects and all arrows.
+\end{frame}
+
+\begin{frame}
+	\frametitle{Functors, programming}
+	\Large
+	\noindent Objects are \textbf{types}, arrows are \textbf{functions} between types.\\[1em]\pause
+	
+	\noindent Functors are mappings between types and functions.
+\end{frame}
+
+
+\begin{frame}
+	\frametitle{Functors, \texttt{Int} and \texttt{IntSet}}
+	\hspace*{2cm}
+    \begin{tikzpicture}[scale=0.7, every node/.style={scale=0.7}, node distance=2.5cm,>=stealth',on grid,auto,every state/.style={minimum size=1pt}]
+        %\draw[help lines] (-3,-3) grid (6,3);
+        \tikzset{vertex/.style = {shape=circle,draw,minimum size=1em}}
+        \tikzset{edge/.style = {->,> = latex'}}
+        % vertices
+        \node[vertex, color=black!20!blue, label={left:$Int$}] (a) at (0,0) {};
+        
+        \node[vertex, color=black!20!red, label={right:$IntSet$}] (Fa) at (4,0) {};
+
+        %edges        
+        \onslide<2->{\draw[edge] (a) to[edge node={node [below] {$$}}] (Fa);}
+        
+        \onslide<3->{\draw[edge, color=black!20!blue] (a) to[out=120, in=60, looseness=16, edge node={node [above] {$f$}}] (a);}
+        \onslide<4->{\draw[edge, color=black!20!red] (Fa) to[out=120, in=60, looseness=16, edge node={node [above] {$map\; f$}}] (Fa);}
+    \end{tikzpicture}	
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Functors, \texttt{Int} and \texttt{IntSet}, wishful thinking}
+	\lstset{numbers=none,basicstyle=\footnotesize\color{black}}
+    \begin{code}
+        \begin{lstlisting}
+scala> val set = Empty include 7 include 5 ... include 15
+set: IntSet = {{.5.}7{{.9.}12{.15.}}}
+
+scala> set map {x => x}
+res23: IntSet = {{.5.}7{{.9.}12{.15.}}}
+        \end{lstlisting}
+    \end{code}
+	~\pause
+	\lstset{numbers=none,basicstyle=\footnotesize\color{black}}
+    \begin{code}
+        \begin{lstlisting}
+scala> set map {x => 1}
+res24: IntSet = {.1.}
+        \end{lstlisting}
+    \end{code}
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Making \texttt{IntSet} functorial}
+	\lstset{basicstyle=\footnotesize\color{black}}
+    \begin{code}
+        \begin{lstlisting}
+sealed trait IntSet {
+  ...
+  def map(f: Int => Int): IntSet = this match {
+    case Empty =>
+      this
+    case NonEmpty(el, left, right) =>
+      ???
+  }
+}
+        \end{lstlisting}
+    \end{code}
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Making \texttt{IntSet} functorial}
+	\lstset{basicstyle=\footnotesize\color{black}}
+    \begin{code}
+        \begin{lstlisting}
+sealed trait IntSet {
+  ...
+  def map(f: Int => Int): IntSet = this match {
+    case Empty =>
+      this
+    case NonEmpty(el, left, right) => {
+      val l = left map f
+      val v = f(el)
+      val r = right map f
+      l union r adjoin v
+    }
+  }
+}
+        \end{lstlisting}
+    \end{code}
+\end{frame}
+
+
+\begin{frame}[fragile]
+	\frametitle{Set operation \texttt{union}}
+	\large\noindent $union(S_1,\, S_2)$ -- produces a new set that contains all elements from $S_1$ and $S_2$.\pause
+	
+	
+	\lstset{basicstyle=\footnotesize\color{black}}
+    \begin{code}
+        \begin{lstlisting}
+ sealed trait IntSet {
+     ...
+     def union(other: IntSet): IntSet
+ }
+
+ case object Empty extends IntSet {
+     ...
+     def union(other: IntSet): IntSet = other
+ }
+
+ case class NonEmpty(...) extends IntSet {
+     ...
+     def union(other: IntSet): IntSet = ???
+ }
+        \end{lstlisting}
+    \end{code}
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Set operation \texttt{union}}
+	\large\noindent $union(S_1,\, S_2)$ -- produces a new set that contains all elements from $S_1$ and $S_2$.\pause
+	
+	\lstset{basicstyle=\footnotesize\color{black}}
+    \begin{code}
+        \begin{lstlisting}
+case class NonEmpty(el: Int, 
+                    left: IntSet, 
+                    right: IntSet) extends IntSet {
+  ...
+  def union(other: IntSet): IntSet =
+    ((left union right) union other) adjoin el
+}
+        \end{lstlisting}
+    \end{code}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Properties of a functor}
+    \pause
+    \begin{itemize}
+		\setlength\itemsep{1em}
+    	\item \texttt{set map \{x => x\} == set}\pause
+		\item \texttt{set.map(g).map(f) == set map \{f.compose(g)\} }
+  	\end{itemize}    
+\end{frame}
+
+
+\begin{frame}[fragile]
+	\frametitle{Functors, functoriality}
+	\Large
+	\begin{center}
+    	\texttt{IntSet} is functorial!
+	\end{center}
+\end{frame}
+
+
+%-------------------------------------------
+%-------------------------------------------
+%-------------------------------------------
+%-------------------------------------------
+\section{A set for anything}
+
+\begin{frame}[fragile]
+	\frametitle{Generic sets}
+	\lstset{numbers=none,basicstyle=\footnotesize\color{black}}
+    \begin{code}
+        \begin{lstlisting}
+type Set = IntSet
+
+trait IntSet {...}        
+        \end{lstlisting}
+    \end{code}\pause
+    
+    \begin{code}
+        \begin{lstlisting}
+type Set[+A] = Tree[A]
+
+trait Tree[+A] {...}
+        \end{lstlisting}
+    \end{code}
+    
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Generic sets, type hierarchy}
+	\lstset{basicstyle=\footnotesize\color{black}}
+    \begin{code}
+        \begin{lstlisting}
+ type Set[+A] = Tree[A]
+
+ sealed trait Tree[+A] {
+ }
+
+ case object Empty extends Tree[Nothing] {
+   override def toString = "."
+ }
+
+ case class NonEmpty[A](a: A, 
+                        left: Tree[A], 
+                        right: Tree[A]) extends Tree[A] {
+   override def toString: String = 
+     "{" + left + a + right + "}"
+ }
+        \end{lstlisting}
+    \end{code}
+    
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Generic sets, operations}
+	\lstset{numbers=none,basicstyle=\footnotesize\color{black}}
+    \begin{code}
+        \begin{lstlisting}
+ def adjoin[A](x: A, set: Set[A])
+              (implicit cmp: Ordering[A]): Set[A] = ???
+
+ def contains_?[A](x: A, set: Set[A])
+                  (implicit cmp: Ordering[A]): Boolean = ???
+
+ def union[A](set1: Set[A], set2: Set[A])
+             (implicit cmp: Ordering[A]): Set[A] = ???
+             
+ def map[A, B](set: Set[A], f: A => B)
+              (implicit cmp: Ordering[B]): Set[B] = ???
+        \end{lstlisting}
+    \end{code}
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Generic sets, operation \texttt{adjoin}}
+	\lstset{basicstyle=\footnotesize\color{black}}
+
+    \begin{code}
+        \begin{lstlisting}
+ def adjoin[A](x: A, set: Set[A])
+              (implicit cmp: Ordering[A]): Set[A] = 
+   set match {
+   case Empty =>
+     NonEmpty(x, Empty, Empty)
+   case NonEmpty(a, left, right) =>
+     if (cmp.lt(x, a)) NonEmpty(a, adjoin(x, left), right)
+     else if (cmp.gt(x, a)) NonEmpty(a, left, adjoin(x, right))
+     else set
+ }
+        \end{lstlisting}
+    \end{code}
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Generic sets, operation \texttt{contains?}}
+	\lstset{basicstyle=\footnotesize\color{black}}
+
+    \begin{code}
+        \begin{lstlisting}
+ def contains_?[A](x: A, set: Set[A])
+                  (implicit cmp: Ordering[A]): Boolean = 
+   set match {
+   case Empty =>
+     false
+   case NonEmpty(a, left, right) =>
+     if (cmp.lt(x, a)) contains_?(x, left)
+     else if (cmp.gt(x, a)) contains_?(x, right)
+     else true
+ }
+        \end{lstlisting}
+    \end{code}
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Generic sets, operation \texttt{union}}
+	\lstset{basicstyle=\footnotesize\color{black}}
+    \begin{code}
+        \begin{lstlisting}
+ def union[A](set1: Set[A], set2: Set[A])
+             (implicit cmp: Ordering[A]): Set[A] = 
+   set1 match {
+   case Empty =>
+     set2
+   case NonEmpty(x, left, right) => 
+     set2 match {
+     case Empty =>
+       set1
+     case NonEmpty(_, _, _) =>
+       adjoin(x, union(union(left,  right),  set2))
+   }
+ }
+        \end{lstlisting}
+    \end{code}
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Generic sets, operation \texttt{map}}
+	\lstset{basicstyle=\footnotesize\color{black}}
+    \begin{code}
+        \begin{lstlisting}
+ def map[A, B](set: Set[A], f: A => B)
+              (implicit cmp: Ordering[B]): Set[B] = 
+   set match {
+   case Empty =>
+     Empty
+   case NonEmpty(x, left, right) =>
+     val l = map(left,  f)
+     val v = f(x)
+     val r = map(right, f)
+     adjoin(v, union(l, r))
+ }
+        \end{lstlisting}
+    \end{code}
+\end{frame}
+
+
+\begin{frame}
+	\frametitle{Functoriality of \texttt{Tree[A]}}
+	\hspace*{1cm}
+    \begin{tikzpicture}[scale=1, every node/.style={scale=1}, node distance=2.5cm,>=stealth',on grid,auto,every state/.style={minimum size=1pt}]
+        %\draw[help lines] (-3,-3) grid (6,3);
+        \tikzset{vertex/.style = {shape=circle,draw,minimum size=1em}}
+        \tikzset{edge/.style = {->,> = latex'}}
+        % vertices
+        \node[vertex, color=black!20!blue, label={left:$A$}] (a) at (0,0) {};
+        \node[vertex, color=black!20!blue, label={left:$B$}] (b) at (0,-2) {};
+
+        
+        \node[vertex, color=black!20!red, label={right:$Tree[A]$}] (Fa)  at (4,0) {};
+        \node[vertex, color=black!20!red, label={right:$Tree[B]$}] (Fb) at (4,-2) {};
+
+        %edges        
+        \onslide<2->{\draw[edge] (a) to[edge node={node [below] {$$}}] (Fa);}
+        \onslide<3->{\draw[edge] (b) to[edge node={node [below] {$$}}] (Fb);}
+
+        
+        \onslide<4->{\draw[edge, color=black!20!blue] (a)  to[edge node={node [left] {$f$}}] (b);}
+        \onslide<5->{\draw[edge, color=black!20!red] (Fa)  to[edge node={node [right] {$map\; f$}}] (Fb);}
+    \end{tikzpicture}	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Functoriality of \texttt{Tree[A]}}
+	\hspace*{0.2cm}
+    \begin{tikzpicture}[scale=1, every node/.style={scale=1}, node distance=2.5cm,>=stealth',on grid,auto,every state/.style={minimum size=1pt}]
+        %\draw[help lines] (-3,-3) grid (6,3);
+        \tikzset{vertex/.style = {shape=circle,draw,minimum size=1em}}
+        \tikzset{edge/.style = {->,> = latex'}}
+        % vertices
+        \node[vertex, color=black!20!blue, label={left:$String$}] (a) at (0,0) {};
+        \node[vertex, color=black!20!blue, label={left:$Int$}] (b) at (0,-2) {};
+
+        
+        \node[vertex, color=black!20!red, label={right:$Tree[String]$}] (Fa)  at (4,0) {};
+        \node[vertex, color=black!20!red, label={right:$Tree[Int]$}] (Fb) at (4,-2) {};
+
+        %edges        
+        \onslide<2->{\draw[edge] (a) to[edge node={node [below] {$$}}] (Fa);}
+        \onslide<3->{\draw[edge] (b) to[edge node={node [below] {$$}}] (Fb);}
+
+        
+        \onslide<4->{\draw[edge, color=black!20!blue] (a)  to[edge node={node [left] {$f$}}] (b);}
+        \onslide<5->{\draw[edge, color=black!20!red] (Fa)  to[edge node={node [right] {$map\; f$}}] (Fb);}
+    \end{tikzpicture}	
+\end{frame}
+
+\begin{frame}
+	\frametitle{A bit of coding\ldots}
+	\Large\centering
+	\noindent Let's run some code!
+\end{frame}
+
+
+\begin{frame}
+	\frametitle{Some final thoughts on binary search trees}
+	\Large
+	\noindent Full binary search trees become unbalanced over time, and may even degenerate into a list.\pause
+  	\begin{itemize}
+		\setlength\itemsep{1em}
+		\item They require maintenance -- rebalancing.\pause
+		\item There are more efficient structures: B-trees and red-black trees.
+  	\end{itemize}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Looking back}
+
+	\noindent What have we touched on today?\pause
+  	\begin{itemize}
+		\setlength\itemsep{1em}
+		\item The representation problem.\pause
+		\item ADTs and how \texttt{sealed} type hierarchies of \texttt{trait}s, \texttt{case object}s and \texttt{case classe}s can model them.\pause
+		\item Persistent data structures.\pause
+		\item Functoriality and what it means.\pause
+		\item Used both more OO and more functional approach to modelling data structures and their operations.\pause
+		\item Scala \texttt{object}s as modules.
+		\item \texttt{Implicit} function arguments.
+  	\end{itemize}
+\end{frame}
+
+\begin{frame}
+	\center\Huge Q\&A	
+\end{frame}
+
+\end{document}
